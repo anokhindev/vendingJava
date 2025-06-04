@@ -1,0 +1,156 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: you
+      changes:
+        - createTable:
+            tableName: vending_machine
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+      rollback:
+        - dropTable:
+            tableName: vending_machine
+
+  - changeSet:
+      id: 2
+      author: you
+      changes:
+        - createTable:
+            tableName: slot
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: vending_machine_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slot_number
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: capacity
+                  type: INT
+        - addForeignKeyConstraint:
+            baseTableName: slot
+            baseColumnNames: vending_machine_id
+            referencedTableName: vending_machine
+            referencedColumnNames: id
+            constraintName: fk_slot_vending_machine
+      rollback:
+        - dropTable:
+            tableName: slot
+
+  - changeSet:
+      id: 3
+      author: you
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: product
+
+  - changeSet:
+      id: 4
+      author: you
+      changes:
+        - createTable:
+            tableName: slot_product
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: slot_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: slot_product
+            baseColumnNames: slot_id
+            referencedTableName: slot
+            referencedColumnNames: id
+            constraintName: fk_slot_product_slot
+        - addForeignKeyConstraint:
+            baseTableName: slot_product
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+            constraintName: fk_slot_product_product
+      rollback:
+        - dropTable:
+            tableName: slot_product
+  - changeSet:
+      id: 5
+      author: you
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)

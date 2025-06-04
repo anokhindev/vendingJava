@@ -1,0 +1,30 @@
+pluginManagement {
+    repositories {
+        maven {
+            url "https://nexus.rustore.ru/repository/maven-rustore-cached/"
+        }
+        maven {
+            url "https://nexus.rustore.ru/repository/build-infra-releases"
+        }
+        // Do not use the internet for regular builds. Only RuStore Nexus or Gitlab repos are allowed.
+        // gradlePluginPortal()
+        mavenLocal()
+    }
+
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("ru.rustore.code.owner.api.plugin")) {
+                useModule("ru.rustore.code.owner.api:code-owner-api-plugin:${requested.version}")
+            }
+            if (requested.id.id.startsWith("ru.rustore.plugins.cidepman")) {
+                useModule("ru.rustore.plugins:cidepman:${requested.version}")
+            }
+            if (requested.id.id.startsWith("ru.rustore.check.sre.plugin")) {
+                useModule("ru.rustore.check.sre:check-sre-plugin:${requested.version}")
+            }
+        }
+    }
+}
+
+
+rootProject.name = "vending"
