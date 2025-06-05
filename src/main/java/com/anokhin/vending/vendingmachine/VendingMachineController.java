@@ -46,4 +46,12 @@ public class VendingMachineController {
         ApiResponse<List<SlotResponse>> slots = vendingMachineService.getSlotByIdMachine(id);
         return ResponseEntity.status(slots.getStatus()).body(slots);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<VendingMachineResponse>> deleteMachine(@PathVariable Long id) {
+        ApiResponse<VendingMachineResponse> response = this.vendingMachineService.removeMachine(id);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+
+    }
 }

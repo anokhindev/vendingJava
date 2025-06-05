@@ -98,4 +98,28 @@ public class VendingMachineService {
 
         return new ApiResponse<>(HttpStatus.OK, "Список слотов по автомату", result);
     }
+
+
+    public ApiResponse<VendingMachineResponse> removeMachine(Long vendingMachineId) {
+        var vendingOptional = vendingMachineRepository.findById(vendingMachineId);
+
+        if (vendingOptional.isEmpty()) {
+            return new ApiResponse<>(HttpStatus.NOT_FOUND, "Автомат не найден", null);
+        }
+
+        var vending = vendingOptional.get();
+
+        slotRepository.deleteByVendingMachineId(vendingMachineId);
+
+
+        VendingMachineResponse response = new VendingMachineResponse();
+        response.setId(vending.getId());
+        response.setName(vending.getName());
+        response.setLocation(vending.getLocation());
+        response.setSlotCount(vending.getSlots().size());
+
+        vendingMachineRepository.deleteById(vendingMachineId);
+
+        return new ApiResponse<>(HttpStatus.OK, "Автомат удален", response);
+    }
 }
