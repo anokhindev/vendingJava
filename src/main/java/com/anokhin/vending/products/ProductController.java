@@ -29,4 +29,16 @@ public class ProductController {
         ApiResponse<List<Product>> response = productService.getProducts();
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Product>> getProduct(@PathVariable("id") long id) {
+        ApiResponse<Product> response = productService.getProduct(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<ApiResponse<Product>> updateProduct(@PathVariable("id") long id, @RequestBody Product product) {
+        ApiResponse<Product> response = productService.updateProduct(id, product);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 }
