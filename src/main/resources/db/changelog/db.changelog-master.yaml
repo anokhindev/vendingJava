@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changes/init_schema.yaml
   - include:
       file: db/changelog/changes/product_id_bigint.yaml
+  - include:
+      file: db/changelog/changes/purchase_shema.yaml

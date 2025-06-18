@@ -1,22 +1,27 @@
-package com.anokhin.vending.purchase.servises;
+package com.anokhin.vending.purchase.services;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.Random;
 
-@Slf4j
 @Service
 public class PaymentEmulatorService {
     private final Random random = new Random();
 
-    public boolean processPayment(String cardNumber, BigDecimal amount) {
-        log.info("Проверка карты {} на сумму {}", cardNumber, amount);
-        return random.nextBoolean();
+    public PaymentResult charge(String cardNumber, BigDecimal amount) {
+        // Эмуляция обработки платежа
+        // В реальном приложении здесь был бы вызов платежного шлюза
+        boolean success = random.nextDouble() > 0.1; // 90% успешных платежей
+        
+        if (success) {
+            return new PaymentResult(true, "Payment successful");
+        } else {
+            return new PaymentResult(false, "Payment failed");
+        }
     }
 
-    public void processRefund(String cardNumber, BigDecimal amount) {
-        log.info("Возврат средств по карте {} на сумму {}", cardNumber, amount);
+    public PaymentResult refund(String cardNumber, BigDecimal amount) {
+        // Эмуляция возврата средств
+        return new PaymentResult(true, "Refund successful");
     }
 }

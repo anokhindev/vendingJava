@@ -1,23 +1,31 @@
-package com.anokhin.vending.purchase.servises;
+package com.anokhin.vending.purchase.services;
 
 import com.anokhin.vending.vendingmachine.entity.Slot;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.Random;
 
-@Slf4j
 @Service
 public class HardwareEmulatorService {
     private final Random random = new Random();
 
-    public void spin(Slot slot) {
-        log.info("Прокрутка спирали ячейки {}", slot.getId());
+    public void rotateSlot(Slot slot) {
+        // Эмуляция прокрутки спирали
+        try {
+            Thread.sleep(1000); // Имитация времени прокрутки
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
-    public boolean checkFallSensor(Slot slot) {
-        boolean result = random.nextBoolean();
-        log.info("Проверка падения товара в ячейке {}: {}", slot.getId(), result);
-        return result;
+    public SensorCheckResult checkSensor(Slot slot) {
+        // Эмуляция проверки сенсора
+        // В реальном приложении здесь был бы вызов API аппаратной части
+        boolean success = random.nextDouble() > 0.2; // 80% успешных проверок
+        
+        if (success) {
+            return new SensorCheckResult(true, "Product dispensed successfully");
+        } else {
+            return new SensorCheckResult(false, "Product not dispensed");
+        }
     }
 }

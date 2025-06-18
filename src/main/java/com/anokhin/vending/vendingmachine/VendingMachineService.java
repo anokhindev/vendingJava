@@ -1,6 +1,7 @@
 package com.anokhin.vending.vendingmachine;
 
 import com.anokhin.vending.common.dto.ApiResponse;
+import com.anokhin.vending.exception.EntityNotFoundException;
 import com.anokhin.vending.vendingmachine.dto.SlotResponse;
 import com.anokhin.vending.vendingmachine.dto.VendingMachineRequest;
 import com.anokhin.vending.vendingmachine.dto.VendingMachineResponse;
@@ -67,7 +68,7 @@ public class VendingMachineService {
         return new ApiResponse<>(HttpStatus.OK, "Список автоматов", machines);
     }
 
-    public ApiResponse<VendingMachineResponse> getMachineById(Long id) {
+    public ApiResponse<VendingMachineResponse> getMachineById(Long id) throws EntityNotFoundException  {
         return this.vendingMachineRepository.findById(id)
                 .map(vm -> {
                     VendingMachineResponse res = new VendingMachineResponse();
@@ -77,7 +78,7 @@ public class VendingMachineService {
                     res.setSlotCount(vm.getSlots().size());
                     return new ApiResponse<>(HttpStatus.OK, "Автомат найден", res);
                 })
-                .orElseGet(() -> new ApiResponse<>(HttpStatus.NOT_FOUND, "Автомат не найден", null));
+                .orElseThrow(() -> new EntityNotFoundException("Автомат не найден"));
     }
 
 
@@ -100,11 +101,11 @@ public class VendingMachineService {
     }
 
 
-    public ApiResponse<VendingMachineResponse> removeMachine(Long vendingMachineId) {
+    public ApiResponse<VendingMachineResponse> removeMachine(Long vendingMachineId) throws EntityNotFoundException  {
         var vendingOptional = vendingMachineRepository.findById(vendingMachineId);
 
         if (vendingOptional.isEmpty()) {
-            return new ApiResponse<>(HttpStatus.NOT_FOUND, "Автомат не найден", null);
+            throw new EntityNotFoundException("Автомат не найден");
         }
 
         var vending = vendingOptional.get();
