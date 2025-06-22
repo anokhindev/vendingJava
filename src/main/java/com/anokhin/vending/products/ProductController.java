@@ -58,4 +58,14 @@ public class ProductController {
         ApiResponse<Product> response = productService.addProductTOSlot(slotId, productId, quantity);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{slotId}/products/{productId}")
+    public ResponseEntity<ApiResponse<Product>> updateProductToSlot(
+            @PathVariable Long slotId,
+            @PathVariable Long productId,
+            @RequestParam int quantity
+    ) {
+        ApiResponse<Product> response = productService.updateProductTOSlot(slotId, productId, quantity);
+        return ResponseEntity.ok(response);
+    }
 }

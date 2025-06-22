@@ -1,5 +1,6 @@
 package com.anokhin.vending.purchase.services;
 
+import com.anokhin.vending.purchase.utils.PaymentResult;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Random;

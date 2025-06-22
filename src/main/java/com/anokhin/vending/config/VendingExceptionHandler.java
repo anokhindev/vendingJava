@@ -48,7 +48,7 @@ public class VendingExceptionHandler extends ResponseEntityExceptionHandler {
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND,
-                "Ошибка: запрашиваемая сущность не найдена. " + ex.getMessage(),
+                "Ошибка: " + ex.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
 

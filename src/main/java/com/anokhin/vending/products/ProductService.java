@@ -81,12 +81,20 @@ public class ProductService {
         Slot slot = slotRepository.findById(slotId)
                 .orElseThrow(() -> new EntityNotFoundException("Слот не найден"));
 
-        if (slotProductRepository.existsBySlot(slot)) {
-            throw new EntityNotFoundException("Слот уже занят другим товаром");
-        }
+//        if (slotProductRepository.existsBySlot(slot)) {
+//            throw new EntityNotFoundException("Слот уже занят другим товаром");
+//        }
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Товар не найден"));
+
+        if(slotProductRepository.countByProduct(product) >= 10) {
+            throw new EntityNotFoundException("В слоте не может быть больше 10 товаров");
+        }
+
+        if(slotProductRepository.existsByProductAndSlot(product, slot)) {
+            throw new EntityNotFoundException("Слот занят другим товаром");
+        }
 
         SlotProduct slotProduct = new SlotProduct();
         slotProduct.setSlot(slot);
@@ -95,6 +103,43 @@ public class ProductService {
 
         slotProductRepository.save(slotProduct);
 
-        return new ApiResponse<>(HttpStatus.OK, "Слот добавлен", product);
+        return new ApiResponse<>(HttpStatus.OK, "Товар добавлен", product);
+    }
+
+    public ApiResponse<Product> updateProductTOSlot(Long slotId, Long productId, int quantity) throws IllegalArgumentException {
+        Slot slot = slotRepository.findById(slotId)
+                .orElseThrow(() -> new IllegalArgumentException("Слот не найден"));
+
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Товар не найден"));
+
+
+        if(slotProductRepository.countByProduct(product) >= 10) {
+            throw new IllegalArgumentException("В слоте не может быть больше 10 товаров");
+        }
+
+        if(quantity > 10) {
+            throw new IllegalArgumentException("В слоте не может быть больше 10 товаров");
+        }
+
+
+        if(!slotProductRepository.existsByProductAndSlot(product, slot)) {
+            throw new IllegalArgumentException("Слот занят другим товаром");
+        }
+
+
+        SlotProduct slotproduct = slotProductRepository.findByProductAndSlot(product, slot);
+
+        SlotProduct slotProduct = new SlotProduct();
+        slotProduct.setId(slotproduct.getId());
+        slotProduct.setSlot(slot);
+        slotProduct.setSlot(slot);
+        slotProduct.setProduct(product);
+        slotProduct.setQuantity(quantity);
+
+        slotProductRepository.save(slotProduct);
+
+        return new ApiResponse<>(HttpStatus.OK, "Слот обновлен", product);
     }
 }

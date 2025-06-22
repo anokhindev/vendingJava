@@ -1,5 +1,6 @@
 package com.anokhin.vending.purchase.services;
 
+import com.anokhin.vending.purchase.utils.SensorCheckResult;
 import com.anokhin.vending.vendingmachine.entity.Slot;
 import org.springframework.stereotype.Service;
 import java.util.Random;
@@ -23,9 +24,9 @@ public class HardwareEmulatorService {
         boolean success = random.nextDouble() > 0.2; // 80% успешных проверок
         
         if (success) {
-            return new SensorCheckResult(true, "Product dispensed successfully");
+            return new SensorCheckResult(true, "Товар успешно выдат");
         } else {
-            return new SensorCheckResult(false, "Product not dispensed");
+            return new SensorCheckResult(false, "Товар не упал");
         }
     }
 }

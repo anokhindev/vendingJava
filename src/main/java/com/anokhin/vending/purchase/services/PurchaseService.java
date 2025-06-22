@@ -4,12 +4,13 @@ import com.anokhin.vending.common.dto.ApiResponse;
 import com.anokhin.vending.exception.EntityNotFoundException;
 import com.anokhin.vending.products.entity.Product;
 import com.anokhin.vending.products.entity.SlotProduct;
-import com.anokhin.vending.products.repository.ProductRepository;
 import com.anokhin.vending.products.repository.SlotProductRepository;
 import com.anokhin.vending.purchase.dto.CreatePurchaseRequest;
 import com.anokhin.vending.purchase.entity.Purchase;
 import com.anokhin.vending.purchase.entity.PurchaseStatus;
 import com.anokhin.vending.purchase.repository.PurchaseRepository;
+import com.anokhin.vending.purchase.utils.PaymentResult;
+import com.anokhin.vending.purchase.utils.SensorCheckResult;
 import com.anokhin.vending.vendingmachine.entity.Slot;
 import com.anokhin.vending.vendingmachine.entity.VendingMachine;
 import com.anokhin.vending.vendingmachine.repository.SlotRepository;
@@ -29,11 +30,11 @@ public class PurchaseService {
     private final VendingMachineRepository vendingMachineRepository;
     private final SlotRepository slotRepository;
     private final PurchaseRepository purchaseRepository;
-    private final ProductRepository productRepository;
     private final SlotProductRepository slotProductRepository;
     private final PaymentEmulatorService paymentEmulator;
     private final HardwareEmulatorService hardwareEmulator;
 
+    //используем Transactional, всё или ничего, чтобы в базе небыло незавершенных записей
     @Transactional
     public ApiResponse<Purchase> createPurchase(CreatePurchaseRequest request) throws EntityNotFoundException {
         log.info("Начало процесса покупки для запроса: {}", request);
