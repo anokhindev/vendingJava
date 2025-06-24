@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_purchase_table
+      author: your_name
+      changes:
+        - createTable:
+            tableName: purchase
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: slot_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: card_number
+                  type: VARCHAR(255)
+
+              - column:
+                  name: amount
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                    defaultComputed: CURRENT_TIMESTAMP
+
+        - addForeignKeyConstraint:
+            baseTableName: purchase
+            baseColumnNames: slot_id
+            constraintName: fk_purchase_slot
+            referencedTableName: slot
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            baseTableName: purchase
+            baseColumnNames: product_id
+            constraintName: fk_purchase_product
+            referencedTableName: product
+            referencedColumnNames: id

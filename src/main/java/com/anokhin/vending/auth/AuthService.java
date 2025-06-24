@@ -1,6 +1,7 @@
 package com.anokhin.vending.auth;
 
 import com.anokhin.vending.auth.dto.LoginRequest;
+import com.anokhin.vending.auth.dto.LoginResponse;
 import com.anokhin.vending.auth.dto.RegisterRequest;
 import com.anokhin.vending.auth.entity.User;
 import com.anokhin.vending.auth.entity.Role;
@@ -9,6 +10,10 @@ import com.anokhin.vending.common.dto.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -17,10 +22,19 @@ import java.util.UUID;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository,
+                      PasswordEncoder passwordEncoder,
+                      AuthenticationManager authenticationManager,
+                      JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public ResponseEntity<ApiResponse<Object>> register(RegisterRequest request) {
@@ -31,29 +45,19 @@ public class AuthService {
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword()); // TODO: Захешировать пароль
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.BUYER);
 
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(HttpStatus.CREATED,"Пользователь зарегистрирован", null));
     }
 
-    public ResponseEntity<ApiResponse<Object>> login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
 
-        return userRepository.findByUsername(request.getUsername())
-                .map(user -> {
-                    if (user.getPassword().equals(request.getPassword())) { // TODO: Проверка хеша
-                        return ResponseEntity
-                                .status(HttpStatus.OK)
-                                .body(new ApiResponse<>(HttpStatus.OK, "Пользователь существует", null));
-                    } else {
-                        return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(new ApiResponse<>(HttpStatus.BAD_REQUEST, "Неверный пароль", null));
-                    }
-                })
-                .orElseGet(() -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(new ApiResponse<>(HttpStatus.BAD_REQUEST, "Пользователь не найден", null)));
+        String jwt = jwtTokenProvider.generateToken(authentication);
+        return new LoginResponse(jwt);
     }
 }
